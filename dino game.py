@@ -91,11 +91,11 @@ coin_sfx.set_volume(0.2)
 
 dino_walk_list = [[], []]  # 1 направление, 2 номер кадра
 for i in range(1, 11):
-    dino = pygame.image.load('resources/images/walk' + str(i) + '.png')
+    dino = pygame.image.load('resources/walk' + str(i) + '.png')
     dino = pygame.transform.scale(dino, (100, 100))
     dino_walk_list[RIGHT].append(dino)
 for i in range(1, 11):
-    dino = pygame.image.load('resources/images/walk' + str(i) + '.png')
+    dino = pygame.image.load('resources/walk' + str(i) + '.png')
     dino = pygame.transform.scale(dino, (100, 100))
     dino = pygame.transform.flip(dino, True, False)
     dino_walk_list[LEFT].append(dino)
