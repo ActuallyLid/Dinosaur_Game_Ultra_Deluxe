@@ -143,9 +143,9 @@ shield = pygame.image.load('force_field.png')
 shield = pygame.transform.scale(shield, (100, 100))
 shield_rect = shield.get_rect()
 
-light = pygame.image.load('light (1).png')
-light = pygame.transform.scale(light, (200, 200))
-light_rect = light.get_rect()
+# light = pygame.image.load('light (1).png')
+# light = pygame.transform.scale(light, (200, 200))
+# light_rect = light.get_rect()
 
 font = pygame.font.SysFont('arial', 30)
 
@@ -311,7 +311,6 @@ while running:
     if dino_rect.colliderect(ground_rect):
         on_ground = True
         if moving:
-            print("sands undertale")
             sandgen(20, dino_rect.centerx, dino_rect.bottom, move)
 
     if dino_rect.collidelistall(coin_list):
