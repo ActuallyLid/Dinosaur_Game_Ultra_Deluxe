@@ -17,6 +17,7 @@ ten_seconds = 0
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
+
 screen = pygame.display.set_mode((SW, SH))
 background = (0, 150, 150)
 screen.fill(background)
