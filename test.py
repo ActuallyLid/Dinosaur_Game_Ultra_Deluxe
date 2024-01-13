@@ -1,4 +1,5 @@
 import pygame
+import os
 import random
 
 # constants
@@ -81,6 +82,8 @@ while start:
             running = True
             SW = 800
             SH = 600
+            os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
+            os.environ['SDL_VIDEO_CENTERED'] = '0'
             screen1 = pygame.display.set_mode((SW, SH))
 
 
