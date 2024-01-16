@@ -19,6 +19,9 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 frame = 0
 on_ground = True
+time_down = 0
+time_elapsed = 0
+key = 0
 
 screen = pygame.display.set_mode((SW, SH))
 background = (0, 150, 150)
@@ -50,13 +53,14 @@ except Exception as e:
 logo = pygame.image.load('dinosaur game ultra deluxe logo.jpg')
 logo = pygame.transform.scale(logo, (1280, 633))
 logo_rect = logo.get_rect()
-logo_rect.center = (SW / 2, SH/2)
+logo_rect.center = (SW / 2, SH / 2)
 
 dino_walk_list = []  # 1 направление, 2 номер кадра
 for i in range(1, 3):
     dino = pygame.image.load('dino sprites/dino walk' + str(i) + '.png')
     dino = pygame.transform.scale(dino, (80, 80))
     dino_walk_list.append(dino)
+dino_jump = pygame.image.load('dino sprites/dino jump.png')
 dino_rect = dino.get_rect()
 dino_rect.x = 0
 dino_rect.bottom = ground + 1
@@ -108,10 +112,19 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            time_elapsed = 0
 
     if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
+        if event.key == pygame.K_UP:
             on_ground = False
+            key += 1
+            time_elapsed = (pygame.time.get_ticks() - time_down) / 1000.0
+            print("number: ", key, "duration: ", time_elapsed)
+
+    if event.type == pygame.KEYUP:
+        if event.key == pygame.K_UP:
+            time_down = pygame.time.get_ticks()
+            on_ground = True
 
     for i in range(len(bg_list)):
         bg_list[i].x -= bg_speed
@@ -120,12 +133,12 @@ while running:
         screen1.blit(desert, bg_list[i])
 
     ten_seconds += 1
-    if ten_seconds == 10:
-        if frame < len(dino_walk_list) - 1 and on_ground:
+    if ten_seconds % 5 == 0:
+        if frame < len(dino_walk_list) - 1:
             frame += 1
         else:
             frame = 0
-
+    elif ten_seconds == 10:
         score += 1
         ten_seconds = 0
 
@@ -139,7 +152,8 @@ while running:
             bg_list[i].left = SW
         screen1.blit(desert, bg_list[i])
 
-    screen1.blit(dino_walk_list[frame], dino_rect)
+    if on_ground:
+        screen1.blit(dino_walk_list[frame], dino_rect)
 
     score_text = pixel_font.render(f'{score}', True, BLACK)
     screen1.blit(score_text, (720, 12))
