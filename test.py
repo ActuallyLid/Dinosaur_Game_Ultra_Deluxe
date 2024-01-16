@@ -43,7 +43,11 @@ cac2_rect = cac2.get_rect()
 cac3 = pygame.image.load('dino sprites/cactus3.png')
 cac3_rect = cac3.get_rect()
 
-logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
+try:
+    logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
+except Exception as e:
+    print("Logo image not found or is not png.")
+logo = pygame.image.load('dinosaur game ultra deluxe logo.jpg')
 logo = pygame.transform.scale(logo, (1280, 633))
 logo_rect = logo.get_rect()
 logo_rect.center = (SW / 2, SH/2)
