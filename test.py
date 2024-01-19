@@ -19,6 +19,8 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 frame = 0
 on_ground = True
+long_jump = False
+short_jump = False
 time_down = 0
 time_elapsed = 0
 key = 0
@@ -39,28 +41,24 @@ for i in range(0, 1920, 960):
     bg_list.append(desert_rect)
 
 cac_onscreen_list = []
-cac1 = pygame.image.load('dino sprites/cactus1.png')
+cac1 = pygame.image.load('dino sprites/cactus1-1.png')
 cac1_rect = cac1.get_rect()
-cac2 = pygame.image.load('dino sprites/cactus2.png')
+cac2 = pygame.image.load('dino sprites/cactus2-1.png')
 cac2_rect = cac2.get_rect()
-cac3 = pygame.image.load('dino sprites/cactus3.png')
+cac3 = pygame.image.load('dino sprites/cactus3-1.png')
 cac3_rect = cac3.get_rect()
 
-try:
-    logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
-except Exception as e:
-    print("Logo image not found or is not png.")
-logo = pygame.image.load('dinosaur game ultra deluxe logo.jpg')
+logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
 logo_rect = logo.get_rect()
 logo_rect.center = (SW / 2, SH / 2)
 
 dino_walk_list = []  # 1 направление, 2 номер кадра
 for i in range(1, 3):
-    dino = pygame.image.load('dino sprites/dino walk' + str(i) + '.png')
+    dino = pygame.image.load('dino sprites/dino walk' + str(i) + '-1.png')
     dino = pygame.transform.scale(dino, (80, 80))
     dino_walk_list.append(dino)
-dino_jump = pygame.image.load('dino sprites/dino jump.png')
+dino_jump = pygame.image.load('dino sprites/dino jump-1.png')
 dino_rect = dino.get_rect()
 dino_rect.x = 0
 dino_rect.bottom = ground + 1
@@ -116,15 +114,17 @@ while running:
 
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP:
-            on_ground = False
             key += 1
             time_elapsed = (pygame.time.get_ticks() - time_down) / 1000.0
             print("number: ", key, "duration: ", time_elapsed)
+            if time_elapsed < 0.2:
+                short_jump = True
+            else:
+                long_jump = True
 
     if event.type == pygame.KEYUP:
         if event.key == pygame.K_UP:
             time_down = pygame.time.get_ticks()
-            on_ground = True
 
     for i in range(len(bg_list)):
         bg_list[i].x -= bg_speed
@@ -141,10 +141,6 @@ while running:
     elif ten_seconds == 10:
         score += 1
         ten_seconds = 0
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
 
     for i in range(len(bg_list)):
         bg_list[i].x -= bg_speed
