@@ -9,29 +9,35 @@ SW = 1280
 SH = 633
 LEFT = 1
 RIGHT = 0
-ground = 420
 fps = 60
-bg_speed = 5
 score = 0
 ten_seconds = 0
+frame = 0
 # color constants
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-frame = 0
+# physics consts misc
+ground = 420
+bg_speed = 7
+# movement consts
 on_ground = True
 long_jump = False
 short_jump = False
+direction = None  # True - вверх, False - вниз
+jump_speed = 20
 time_down = 0
 time_elapsed = 0
+
 key = 0
 
+# main game settings
 screen = pygame.display.set_mode((SW, SH))
 background = (0, 150, 150)
 screen.fill(background)
 timer = pygame.time.Clock()
 
 pygame.init()
-
+# sprites and rect
 bg_list = []
 desert = pygame.image.load('resources/desert.png')
 for i in range(0, 1920, 960):
@@ -39,6 +45,8 @@ for i in range(0, 1920, 960):
     desert_rect.bottom = SH
     desert_rect.left = i
     bg_list.append(desert_rect)
+
+ground_rect = (0, ground, SW, SH - ground)
 
 cac_onscreen_list = []
 cac1 = pygame.image.load('dino sprites/cactus1-1.png')
@@ -59,6 +67,7 @@ for i in range(1, 3):
     dino = pygame.transform.scale(dino, (80, 80))
     dino_walk_list.append(dino)
 dino_jump = pygame.image.load('dino sprites/dino jump-1.png')
+dino_jump = pygame.transform.scale(dino_jump, (80, 80))
 dino_rect = dino.get_rect()
 dino_rect.x = 0
 dino_rect.bottom = ground + 1
@@ -78,6 +87,8 @@ quit_text_rect.center = (SW // 2, 450)
 controls_text = font.render('SPACE - Jump', True, BLACK)
 controls_text_rect = controls_text.get_rect()
 controls_text_rect.center = (SW // 2, 550)
+
+# misc functions
 
 while start:
     screen.fill(WHITE)
@@ -113,14 +124,17 @@ while running:
             time_elapsed = 0
 
     if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_UP:
+        if event.key == pygame.K_UP and on_ground:
             key += 1
             time_elapsed = (pygame.time.get_ticks() - time_down) / 1000.0
             print("number: ", key, "duration: ", time_elapsed)
-            if time_elapsed < 0.2:
-                short_jump = True
-            else:
-                long_jump = True
+            on_ground = False
+            direction = True
+            dino_rect.bottom -= 1
+            # if time_elapsed < 0.2:
+            #     short_jump = True
+            # else:
+            #     long_jump = True
 
     if event.type == pygame.KEYUP:
         if event.key == pygame.K_UP:
@@ -141,15 +155,31 @@ while running:
     if ten_seconds == 10:
         score += 1
         ten_seconds = 0
-
-    for i in range(len(bg_list)):
-        bg_list[i].x -= bg_speed
-        if bg_list[i].right < 0:
-            bg_list[i].left = SW
-        screen1.blit(desert, bg_list[i])
+    if ten_seconds % 1 == 0:
+        if direction:
+            jump_speed -= 1
+        else:
+            jump_speed = 20
 
     if on_ground:
         screen1.blit(dino_walk_list[frame], dino_rect)
+
+    if not on_ground:
+        screen1.blit(dino_jump, dino_rect)
+
+    if dino_rect.colliderect(ground_rect):
+        on_ground = True
+        direction = None
+
+    if (ground - dino_rect.bottom) < 0:
+        dino_rect.bottom = ground + 1
+
+    if not on_ground:
+        if direction and dino_rect.top > 100:
+            dino_rect.bottom -= jump_speed
+        else:
+            direction = False
+            dino_rect.bottom += jump_speed
 
     score_text = pixel_font.render(f'{score}', True, BLACK)
     screen1.blit(score_text, (720, 12))
