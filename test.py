@@ -152,11 +152,13 @@ while running:
             frame += 1
         else:
             frame = 0
+
     if ten_seconds == 10:
         score += 1
         ten_seconds = 0
+
     if ten_seconds % 1 == 0:
-        if direction:
+        if direction and dino_rect.bottom <= ground:
             jump_speed -= 1
         else:
             jump_speed = 20
