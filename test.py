@@ -138,7 +138,7 @@ while running:
             frame += 1
         else:
             frame = 0
-    elif ten_seconds == 10:
+    if ten_seconds == 10:
         score += 1
         ten_seconds = 0
 
