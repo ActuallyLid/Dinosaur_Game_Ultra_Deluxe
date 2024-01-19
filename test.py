@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+from but import Button
 
 # constants
 running = False
@@ -67,6 +68,7 @@ dino_rect.left = 100
 font = pygame.font.SysFont('arial', 30)
 pixel_font = pygame.font.SysFont('OCR A Extended', 30)
 
+start_but = Button(50, 400, 40, 30, 'start', self.start_fun)
 start_text = font.render('Start', True, BLACK)
 start_text_rect = start_text.get_rect()
 start_text_rect.center = (SW // 2, 375)
@@ -101,8 +103,10 @@ while start:
         screen.blit(start_text, start_text_rect)
         screen.blit(quit_text, quit_text_rect)
         screen.blit(controls_text, controls_text_rect)
+        start_but.draw()
 
         pygame.display.update()
+
 
 while running:
     timer.tick(fps)
