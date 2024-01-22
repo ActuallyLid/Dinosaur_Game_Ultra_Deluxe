@@ -5,6 +5,7 @@ from but import Button
 
 # constants
 running = False
+close = False
 start = True
 SW = 1280
 SH = 633
@@ -77,20 +78,42 @@ dino_rect.left = 100
 font = pygame.font.SysFont('arial', 30)
 pixel_font = pygame.font.SysFont('OCR A Extended', 30)
 
-start_but = Button(50, 400, 40, 30, 'start', self.start_fun)
-start_text = font.render('Start', True, BLACK)
-start_text_rect = start_text.get_rect()
-start_text_rect.center = (SW // 2, 375)
 
-quit_text = font.render('Exit', True, BLACK)
-quit_text_rect = quit_text.get_rect()
-quit_text_rect.center = (SW // 2, 450)
+class Button:
+    def __init__(self, x, y, width, height, text, action=None):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.text = text
+        self.action = action
+        self.font = pygame.font.SysFont('Cooper Black', 35)
 
-controls_text = font.render('SPACE - Jump', True, BLACK)
-controls_text_rect = controls_text.get_rect()
-controls_text_rect.center = (SW // 2, 550)
+    def draw(self):
+        global running, close
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
 
-# misc functions
+        if click[0] == 1 and self.action:
+            self.action()
+        else:
+            pygame.draw.rect(screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
+        if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
+            if self.text == 'start':
+                running = True
+            elif self.text == 'exit':
+                close = True
+
+        text_surface = self.font.render(self.text, True, (130, 130, 130))
+        text_rect = text_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
+        screen.blit(text_surface, text_rect)
+
+
+start_but = Button(50, 380, 100, 50, 'start')
+quit_but = Button(50, 460, 100, 50, 'exit')
+rule_but = Button(200, 380, 100, 50, 'rules')
+translate_but = Button(50, 530, 250, 50, 'translate')
+shop_but = Button(200, 460, 100, 50, 'shop')
 
 while start:
     screen.fill(WHITE)
@@ -98,26 +121,25 @@ while start:
         if event.type == pygame.QUIT:
             start = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN and start_text_rect.collidepoint(event.pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and running:
             start = False
-            running = True
             SW = 800
             SH = 600
             os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
             os.environ['SDL_VIDEO_CENTERED'] = '0'
             screen1 = pygame.display.set_mode((SW, SH))
 
-        if event.type == pygame.MOUSEBUTTONDOWN and quit_text_rect.collidepoint(event.pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and close:
             start = False
 
         screen.blit(logo, logo_rect)
-        screen.blit(start_text, start_text_rect)
-        screen.blit(quit_text, quit_text_rect)
-        screen.blit(controls_text, controls_text_rect)
         start_but.draw()
+        quit_but.draw()
+        rule_but.draw()
+        translate_but.draw()
+        shop_but.draw()
 
         pygame.display.update()
-
 
 while running:
     timer.tick(fps)

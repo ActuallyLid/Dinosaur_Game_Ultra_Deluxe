@@ -37,27 +37,23 @@ class Button:
         self.height = height
         self.text = text
         self.action = action
-        self.font = pygame.font.SysFont('arial', 15)
-        self.running = False
-
+        self.font = pygame.font.SysFont('Cooper Black', 35)
 
     def draw(self):
+        global running, close
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
-            pygame.draw.rect(screen, (200, 200, 200), (self.x, self.y, self.width, self.height))
         if click[0] == 1 and self.action:
             self.action()
         else:
-            pygame.draw.rect(screen, (150, 150, 150), (self.x, self.y, self.width, self.height))
+            pygame.draw.rect(screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
+        if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
+            if self.text == 'start':
+                running = True
+            elif self.text == 'exit':
+                close = True
 
-        text_surface = self.font.render(self.text, True, 'blue')
+        text_surface = self.font.render(self.text, True, (130, 130, 130))
         text_rect = text_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
         screen.blit(text_surface, text_rect)
-
-    def start_fun(self):
-        running = True
-
-
-
