@@ -112,7 +112,7 @@ class Button:
 start_but = Button(50, 380, 100, 50, 'start')
 quit_but = Button(50, 460, 100, 50, 'exit')
 rule_but = Button(200, 380, 100, 50, 'rules')
-translate_but = Button(50, 530, 250, 50, 'translate')
+translate_but = Button(50, 530, 250, 50, 'settings')
 shop_but = Button(200, 460, 100, 50, 'shop')
 
 while start:
