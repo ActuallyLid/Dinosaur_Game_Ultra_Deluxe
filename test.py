@@ -50,13 +50,18 @@ for i in range(0, 1920, 960):
 
 ground_rect = (0, ground, SW, SH - ground)
 
-cac_onscreen_list = []
+cac_onscreen_list_pic = []
+cac_onscreen_list_rect = []
 cac1 = pygame.image.load('dino sprites/cactus1-1.png')
 cac1_rect = cac1.get_rect()
+cac1_rect.left = SW
+cac1_rect.bottom = ground
 cac2 = pygame.image.load('dino sprites/cactus2-1.png')
 cac2_rect = cac2.get_rect()
+cac2_rect.left = SW
 cac3 = pygame.image.load('dino sprites/cactus3-1.png')
 cac3_rect = cac3.get_rect()
+cac3_rect.left = SW
 
 logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
@@ -157,21 +162,24 @@ while running:
             on_ground = False
             direction = True
             dino_rect.bottom -= 1
-            # if time_elapsed < 0.2:
-            #     short_jump = True
-            # else:
-            #     long_jump = True
 
     if event.type == pygame.KEYUP:
         if event.key == pygame.K_UP:
             time_down = pygame.time.get_ticks()
 
+    # bg
     for i in range(len(bg_list)):
         bg_list[i].x -= bg_speed
         if bg_list[i].right < 0:
             bg_list[i].left = SW
         screen1.blit(desert, bg_list[i])
 
+    cac1_rect.x -= bg_speed
+    if cac1_rect.right < 0:
+        cac1_rect.left = SW
+    screen1.blit(cac1, cac1_rect)
+
+    # ten seconds at a time
     ten_seconds += 1
     if ten_seconds % 5 == 0:
         if frame < len(dino_walk_list) - 1:
@@ -179,9 +187,8 @@ while running:
         else:
             frame = 0
 
-    if ten_seconds == 10:
+    if ten_seconds % 10 == 0:
         score += 1
-        ten_seconds = 0
 
     if ten_seconds % 1 == 0:
         if direction and dino_rect.bottom <= ground:
@@ -189,6 +196,7 @@ while running:
         else:
             jump_speed = 20
 
+    # dino physics
     if on_ground:
         screen1.blit(dino_walk_list[frame], dino_rect)
 
@@ -209,6 +217,9 @@ while running:
             direction = False
             dino_rect.bottom += jump_speed
 
+    # print(cac_onscreen_list_rect, cac_onscreen_list_pic)
+
+    # misc
     score_text = pixel_font.render(f'{score}', True, BLACK)
     screen1.blit(score_text, (720, 12))
 
