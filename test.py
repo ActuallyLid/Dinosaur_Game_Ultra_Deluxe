@@ -59,12 +59,21 @@ cac1_rect = cac1.get_rect()
 cac1_rect.left = SW
 cac1_rect.bottom = ground
 cac2 = pygame.image.load('dino sprites/cactus2-1.png')
+cac2 = pygame.transform.scale(cac2, (100, 80))
 cac2_rect = cac2.get_rect()
 cac2_rect.left = SW
+cac2_rect.bottom = ground
 cac3 = pygame.image.load('dino sprites/cactus3-1.png')
+cac3 = pygame.transform.scale(cac3, (150, 80))
 cac3_rect = cac3.get_rect()
 cac3_rect.left = SW
+cac3_rect.bottom = ground
+
 cac_list = [cac1_rect, cac2_rect, cac3_rect]
+cac_onscreen = False
+cac1_move = False
+cac2_move = False
+cac3_move = False
 
 logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
@@ -180,10 +189,40 @@ while running:
         screen1.blit(desert, bg_list[i])
 
     # cactus
-    cac1_rect.x -= bg_speed
-    if cac1_rect.right < 0:
-        cac1_rect.left = SW
-    screen1.blit(cac1, cac1_rect)
+    if not cac_onscreen:
+        if random.randint(0, 5) == 5:
+            if random.randint(1, 3) == 1:
+                cac_onscreen = True
+                cac1_move = True
+            if random.randint(1, 3) == 2:
+                cac_onscreen = True
+                cac2_move = True
+            if random.randint(1, 3) == 3:
+                cac_onscreen = True
+                cac3_move = True
+
+    if cac1_move:
+        cac1_rect.x -= bg_speed
+        screen1.blit(cac1, cac1_rect)
+    if cac2_move:
+        cac2_rect.x -= bg_speed
+        screen1.blit(cac2, cac2_rect)
+    if cac3_move:
+        cac3_rect.x -= bg_speed
+        screen1.blit(cac3, cac3_rect)
+
+    for i in cac_list:
+        if i.right < -20:
+            i.left = SW
+            cac_onscreen = False
+            cac1_move = False
+            cac2_move = False
+            cac3_move = False
+
+    # cac1_rect.x -= bg_speed
+    # if cac1_rect.right < 0:
+    #     cac1_rect.left = SW
+    # screen1.blit(cac1, cac1_rect)
 
     # ten seconds at a time
     ten_seconds += 1
@@ -196,7 +235,7 @@ while running:
     if ten_seconds % 10 == 0:
         score += 1
 
-        if score >= 50 and score % 50 == 0:
+        if score >= 100 and score % 100 == 0:
             bg_speed += 1
 
     if ten_seconds % 1 == 0:
