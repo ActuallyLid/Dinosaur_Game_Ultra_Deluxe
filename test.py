@@ -3,8 +3,10 @@ import random
 import os
 from but import Button
 
+
 # constants
 running = False
+is_running = False
 close = False
 start = True
 SW = 1280
@@ -29,6 +31,8 @@ direction = None  # True - вверх, False - вниз
 jump_speed = 20
 time_down = 0
 time_elapsed = 0
+heart = 3
+
 
 key = 0
 
@@ -62,6 +66,7 @@ cac2_rect.left = SW
 cac3 = pygame.image.load('dino sprites/cactus3-1.png')
 cac3_rect = cac3.get_rect()
 cac3_rect.left = SW
+cac_list = [cac1_rect, cac2_rect, cac3_rect]
 
 logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
@@ -95,7 +100,7 @@ class Button:
         self.font = pygame.font.SysFont('Cooper Black', 35)
 
     def draw(self):
-        global running, close
+        global running, close, is_running
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
@@ -104,21 +109,21 @@ class Button:
         else:
             pygame.draw.rect(screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
         if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
-            if self.text == 'start':
+            if self.text == 'Start':
                 running = True
-            elif self.text == 'exit':
-                close = True
+            elif self.text == 'Enter':
+                is_running = True
 
         text_surface = self.font.render(self.text, True, (130, 130, 130))
         text_rect = text_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
         screen.blit(text_surface, text_rect)
 
 
-start_but = Button(50, 380, 100, 50, 'start')
-quit_but = Button(50, 460, 100, 50, 'exit')
-rule_but = Button(200, 380, 100, 50, 'rules')
-translate_but = Button(50, 530, 250, 50, 'settings')
-shop_but = Button(200, 460, 100, 50, 'shop')
+start_but = Button(50, 380, 105, 50, 'Start')
+quit_but = Button(50, 460, 105, 50, 'Enter')
+rule_but = Button(200, 380, 105, 50, 'Rules')
+translate_but = Button(50, 530, 250, 50, 'Settings')
+shop_but = Button(200, 460, 105, 50, 'Shop')
 
 while start:
     screen.fill(WHITE)
