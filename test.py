@@ -31,6 +31,7 @@ jump_speed = 20
 time_down = 0
 time_elapsed = 0
 heart = 3
+invincible_timer = 0
 
 key = 0
 
@@ -52,6 +53,27 @@ for i in range(0, 1920, 960):
     bg_list.append(desert_rect)
 
 ground_rect = (0, ground, SW, SH - ground)
+
+heart3_picture = pygame.image.load('hearts.png')
+heart3_picture = pygame.transform.scale(heart3_picture, (80, 40))
+heart3_picture_rect = heart3_picture.get_rect()
+heart3_picture_rect.bottom = 50
+heart3_picture_rect.top = 10
+heart3_picture_rect.right = 100
+
+heart2_picture = pygame.image.load('hearts2.png')
+heart2_picture = pygame.transform.scale(heart2_picture, (55, 40))
+heart2_picture_rect = heart3_picture.get_rect()
+heart2_picture_rect.bottom = 50
+heart2_picture_rect.top = 10
+heart2_picture_rect.right = 100
+
+heart1_picture = pygame.image.load('heart1.png')
+heart1_picture = pygame.transform.scale(heart1_picture, (30, 40))
+heart1_picture_rect = heart3_picture.get_rect()
+heart1_picture_rect.bottom = 50
+heart1_picture_rect.top = 10
+heart1_picture_rect.right = 100
 
 cac1 = pygame.image.load('dino sprites/cactus1-1.png')
 cac1 = pygame.transform.scale(cac1, (50, 80))
@@ -188,6 +210,14 @@ while running:
             bg_list[i].left = SW
         screen1.blit(desert, bg_list[i])
 
+    if heart == 1:
+        screen1.blit(heart1_picture, heart1_picture_rect)
+    if heart == 2:
+        screen1.blit(heart2_picture, heart2_picture_rect)
+    if heart == 3:
+        screen1.blit(heart3_picture, heart3_picture_rect)
+
+
     # cactus
     if not cac_onscreen:
         if random.randint(0, 5) == 5:
@@ -226,6 +256,8 @@ while running:
 
     # ten seconds at a time
     ten_seconds += 1
+    if invincible_timer != 0:
+        invincible_timer -= 1
     if ten_seconds % 5 == 0:
         if frame < len(dino_walk_list) - 1:
             frame += 1
@@ -264,6 +296,12 @@ while running:
         else:
             direction = False
             dino_rect.bottom += jump_speed
+
+    if dino_rect.collidelistall(cac_list) and invincible_timer == 0:
+        invincible_timer = 60
+        heart -= 1
+        if heart == 0:
+            running = False
 
     # print(cac_onscreen_list_rect, cac_onscreen_list_pic)
 
