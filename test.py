@@ -3,7 +3,6 @@ import random
 import os
 from but import Button
 
-
 # constants
 running = False
 is_running = False
@@ -33,7 +32,6 @@ time_down = 0
 time_elapsed = 0
 heart = 3
 
-
 key = 0
 
 # main game settings
@@ -43,6 +41,7 @@ screen.fill(background)
 timer = pygame.time.Clock()
 
 pygame.init()
+
 # sprites and rect
 bg_list = []
 desert = pygame.image.load('resources/desert.png')
@@ -54,9 +53,8 @@ for i in range(0, 1920, 960):
 
 ground_rect = (0, ground, SW, SH - ground)
 
-cac_onscreen_list_pic = []
-cac_onscreen_list_rect = []
 cac1 = pygame.image.load('dino sprites/cactus1-1.png')
+cac1 = pygame.transform.scale(cac1, (50, 80))
 cac1_rect = cac1.get_rect()
 cac1_rect.left = SW
 cac1_rect.bottom = ground
@@ -87,6 +85,11 @@ dino_rect.left = 100
 
 font = pygame.font.SysFont('arial', 30)
 pixel_font = pygame.font.SysFont('OCR A Extended', 30)
+
+
+# misc
+def move(n):
+    pass
 
 
 class Button:
@@ -161,9 +164,6 @@ while running:
 
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP and on_ground:
-            key += 1
-            time_elapsed = (pygame.time.get_ticks() - time_down) / 1000.0
-            print("number: ", key, "duration: ", time_elapsed)
             on_ground = False
             direction = True
             dino_rect.bottom -= 1
@@ -179,6 +179,7 @@ while running:
             bg_list[i].left = SW
         screen1.blit(desert, bg_list[i])
 
+    # cactus
     cac1_rect.x -= bg_speed
     if cac1_rect.right < 0:
         cac1_rect.left = SW
@@ -194,6 +195,9 @@ while running:
 
     if ten_seconds % 10 == 0:
         score += 1
+
+        if score >= 50 and score % 50 == 0:
+            bg_speed += 1
 
     if ten_seconds % 1 == 0:
         if direction and dino_rect.bottom <= ground:
