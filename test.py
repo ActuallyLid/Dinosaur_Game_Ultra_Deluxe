@@ -5,6 +5,7 @@ from button import ButtonSprite
 
 
 pygame.init()
+
 # constants
 
 sound1 = pygame.mixer.Sound('resources/pryjok.mp3')
