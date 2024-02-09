@@ -1,7 +1,9 @@
 import pygame
 import random
 import os
-from but import Button
+from button import ButtonSprite
+
+
 
 # constants
 running = False
@@ -118,11 +120,6 @@ font = pygame.font.SysFont('arial', 30)
 pixel_font = pygame.font.SysFont('OCR A Extended', 30)
 
 
-# misc
-def move(n):
-    pass
-
-
 class Button:
     def __init__(self, x, y, width, height, text, action=None):
         self.x = x
@@ -132,16 +129,17 @@ class Button:
         self.text = text
         self.action = action
         self.font = pygame.font.SysFont('Cooper Black', 35)
+        self.screen = screen
 
     def draw(self):
-        global running, close, is_running
+        global  running, close, is_running
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
         if click[0] == 1 and self.action:
             self.action()
         else:
-            pygame.draw.rect(screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
+            pygame.draw.rect(self.screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
         if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
             if self.text == 'Start':
                 running = True
@@ -150,14 +148,25 @@ class Button:
 
         text_surface = self.font.render(self.text, True, (130, 130, 130))
         text_rect = text_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
-        screen.blit(text_surface, text_rect)
+        self.screen.blit(text_surface, text_rect)
+
+# misc
+def move(n):
+    pass
+
+# start_but = Button( 50, 380, 105, 50, 'Start')
+# quit_but = Button( 50, 460, 105, 50, 'Enter')
+# rule_but = Button( 200, 380, 105, 50, 'Rules')
+# translate_but = Button( 50, 530, 250, 50, 'Settings')
+# shop_but = Button( 200, 460, 105, 50, 'Shop')
 
 
-start_but = Button(50, 380, 105, 50, 'Start')
-quit_but = Button(50, 460, 105, 50, 'Enter')
-rule_but = Button(200, 380, 105, 50, 'Rules')
-translate_but = Button(50, 530, 250, 50, 'Settings')
-shop_but = Button(200, 460, 105, 50, 'Shop')
+buttons = pygame.sprite.Group()
+start_button = ButtonSprite(buttons, 50, 380, 105, 50, "Start")
+enter_button = ButtonSprite(buttons, 50, 460, 105, 50, 'Enter')
+rule_button = ButtonSprite(buttons, 200, 380, 105, 50, 'Rules')
+translate_button = ButtonSprite(buttons, 50, 530, 250, 50, 'Settings')
+shop_button = ButtonSprite(buttons, 200, 460, 105, 50, 'Shop')
 
 while start:
     screen.fill(WHITE)
@@ -165,23 +174,39 @@ while start:
         if event.type == pygame.QUIT:
             start = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN and running:
-            start = False
-            SW = 800
-            SH = 600
-            os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
-            os.environ['SDL_VIDEO_CENTERED'] = '0'
-            screen1 = pygame.display.set_mode((SW, SH))
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if start_button.rect.collidepoint(event.pos):
+                print("Start Game")
+                running = True
+                start = False
+                SW = 800
+                SH = 600
+                os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
+                os.environ['SDL_VIDEO_CENTERED'] = '0'
+                screen1 = pygame.display.set_mode((SW, SH))
+            if enter_button.rect.collidepoint(event.pos):
+                print("enter")
+
+
+        # if event.type == pygame.MOUSEBUTTONDOWN and running:
+        #     start = False
+        #     SW = 800
+        #     SH = 600
+        #     os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
+        #     os.environ['SDL_VIDEO_CENTERED'] = '0'
+        #     screen1 = pygame.display.set_mode((SW, SH))
 
         if event.type == pygame.MOUSEBUTTONDOWN and close:
             start = False
 
         screen.blit(logo, logo_rect)
-        start_but.draw()
-        quit_but.draw()
-        rule_but.draw()
-        translate_but.draw()
-        shop_but.draw()
+        # start_but.draw()
+        # quit_but.draw()
+        # rule_but.draw()
+        # translate_but.draw()
+        # shop_but.draw()
+
+        buttons.draw(screen)
 
         pygame.display.update()
 
