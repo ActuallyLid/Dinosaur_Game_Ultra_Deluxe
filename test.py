@@ -6,6 +6,13 @@ from button import ButtonSprite
 
 
 # constants
+
+sound1 = pygame.mixer.Sound('resources/pryjok.mp3')
+sound2 = pygame.mixer.Sound('resources/damage.mp3')
+sound3 = pygame.mixer.Sound('resources/death.mp3')
+
+pygame.mixer.music.load('resources/menumusic.mp3')
+pygame.mixer.music.play(-1)
 running = False
 is_running = False
 close = False
@@ -142,6 +149,9 @@ class Button:
             pygame.draw.rect(self.screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
         if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
             if self.text == 'Start':
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load('resources/backgroundmusic.mp3')
+                pygame.mixer.music.play(-1)
                 running = True
             elif self.text == 'Enter':
                 is_running = True
@@ -170,6 +180,7 @@ shop_button = ButtonSprite(buttons, 200, 460, 105, 50, 'Shop')
 
 while start:
     screen.fill(WHITE)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             start = False
@@ -220,6 +231,7 @@ while running:
 
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP and on_ground:
+            sound1.play()
             on_ground = False
             direction = True
             dino_rect.bottom -= 1
@@ -325,7 +337,9 @@ while running:
     if dino_rect.collidelistall(cac_list) and invincible_timer == 0:
         invincible_timer = 60
         heart -= 1
+        sound2.play()
         if heart == 0:
+            sound3.play()
             running = False
 
     # print(cac_onscreen_list_rect, cac_onscreen_list_pic)
