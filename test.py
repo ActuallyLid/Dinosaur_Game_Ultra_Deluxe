@@ -190,6 +190,9 @@ while start:
             if start_button.rect.collidepoint(event.pos):
                 print("Start Game")
                 running = True
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load('resources/backgroundmusic.mp3')
+                pygame.mixer.music.play(-1)
                 start = False
                 SW = 800
                 SH = 600
