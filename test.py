@@ -4,7 +4,7 @@ import os
 from button import ButtonSprite
 
 
-
+pygame.init()
 # constants
 
 sound1 = pygame.mixer.Sound('resources/pryjok.mp3')
@@ -50,7 +50,7 @@ background = (0, 150, 150)
 screen.fill(background)
 timer = pygame.time.Clock()
 
-pygame.init()
+
 
 # sprites and rect
 bg_list = []
@@ -149,9 +149,7 @@ class Button:
             pygame.draw.rect(self.screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
         if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
             if self.text == 'Start':
-                pygame.mixer.music.stop()
-                pygame.mixer.music.load('resources/backgroundmusic.mp3')
-                pygame.mixer.music.play(-1)
+
                 running = True
             elif self.text == 'Enter':
                 is_running = True
@@ -187,8 +185,10 @@ while start:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if start_button.rect.collidepoint(event.pos):
-                print("Start Game")
                 running = True
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load('resources/backgroundmusic.mp3')
+                pygame.mixer.music.play(-1)
                 start = False
                 SW = 800
                 SH = 600
