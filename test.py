@@ -1,9 +1,19 @@
 import pygame
 import random
 import os
-from but import Button
+from button import ButtonSprite
+
+
+pygame.init()
 
 # constants
+
+sound1 = pygame.mixer.Sound('resources/pryjok.mp3')
+sound2 = pygame.mixer.Sound('resources/damage.mp3')
+sound3 = pygame.mixer.Sound('resources/death.mp3')
+
+pygame.mixer.music.load('resources/menumusic.mp3')
+pygame.mixer.music.play(-1)
 running = False
 is_running = False
 close = False
@@ -31,7 +41,9 @@ jump_speed = 20
 time_down = 0
 time_elapsed = 0
 heart = 3
-time1 = 0
+invincible_timer = 0
+
+key = 0
 
 # main game settings
 screen = pygame.display.set_mode((SW, SH))
@@ -39,7 +51,7 @@ background = (0, 150, 150)
 screen.fill(background)
 timer = pygame.time.Clock()
 
-pygame.init()
+
 
 # sprites and rect
 bg_list = []
@@ -52,6 +64,27 @@ for i in range(0, 1920, 960):
 
 ground_rect = (0, ground, SW, SH - ground)
 
+heart3_picture = pygame.image.load('hearts.png')
+heart3_picture = pygame.transform.scale(heart3_picture, (80, 40))
+heart3_picture_rect = heart3_picture.get_rect()
+heart3_picture_rect.bottom = 50
+heart3_picture_rect.top = 10
+heart3_picture_rect.right = 100
+
+heart2_picture = pygame.image.load('hearts2.png')
+heart2_picture = pygame.transform.scale(heart2_picture, (55, 40))
+heart2_picture_rect = heart3_picture.get_rect()
+heart2_picture_rect.bottom = 50
+heart2_picture_rect.top = 10
+heart2_picture_rect.right = 100
+
+heart1_picture = pygame.image.load('heart1.png')
+heart1_picture = pygame.transform.scale(heart1_picture, (30, 40))
+heart1_picture_rect = heart3_picture.get_rect()
+heart1_picture_rect.bottom = 50
+heart1_picture_rect.top = 10
+heart1_picture_rect.right = 100
+
 cac1 = pygame.image.load('dino sprites/cactus1-1.png')
 cac1 = pygame.transform.scale(cac1, (50, 80))
 cac1_rect = cac1.get_rect()
@@ -63,7 +96,7 @@ cac2_rect = cac2.get_rect()
 cac2_rect.left = SW
 cac2_rect.bottom = ground
 cac3 = pygame.image.load('dino sprites/cactus3-1.png')
-cac3 = pygame.transform.scale(cac3, (150, 80))
+cac3 = pygame.transform.scale(cac3, (100, 60))
 cac3_rect = cac3.get_rect()
 cac3_rect.left = SW
 cac3_rect.bottom = ground
@@ -112,56 +145,87 @@ class Button:
         self.text = text
         self.action = action
         self.font = pygame.font.SysFont('Cooper Black', 35)
+        self.screen = screen
 
     def draw(self):
-        global running, close, is_running
+        global  running, close, is_running
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
         if click[0] == 1 and self.action:
             self.action()
         else:
-            pygame.draw.rect(screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
+            pygame.draw.rect(self.screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
         if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
             if self.text == 'Start':
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load('resources/backgroundmusic.mp3')
+                pygame.mixer.music.play(-1)
                 running = True
             elif self.text == 'Enter':
                 is_running = True
 
         text_surface = self.font.render(self.text, True, (130, 130, 130))
         text_rect = text_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
-        screen.blit(text_surface, text_rect)
+        self.screen.blit(text_surface, text_rect)
+
+# start_but = Button( 50, 380, 105, 50, 'Start')
+# quit_but = Button( 50, 460, 105, 50, 'Enter')
+# rule_but = Button( 200, 380, 105, 50, 'Rules')
+# translate_but = Button( 50, 530, 250, 50, 'Settings')
+# shop_but = Button( 200, 460, 105, 50, 'Shop')
 
 
-start_but = Button(50, 380, 105, 50, 'Start')
-quit_but = Button(50, 460, 105, 50, 'Enter')
-rule_but = Button(200, 380, 105, 50, 'Rules')
-translate_but = Button(50, 530, 250, 50, 'Settings')
-shop_but = Button(200, 460, 105, 50, 'Shop')
+buttons = pygame.sprite.Group()
+start_button = ButtonSprite(buttons, 50, 380, 105, 50, "Start")
+enter_button = ButtonSprite(buttons, 50, 460, 105, 50, 'Enter')
+rule_button = ButtonSprite(buttons, 200, 380, 105, 50, 'Rules')
+translate_button = ButtonSprite(buttons, 50, 530, 250, 50, 'Settings')
+shop_button = ButtonSprite(buttons, 200, 460, 105, 50, 'Shop')
 
 while start:
     screen.fill(WHITE)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             start = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN and running:
-            start = False
-            SW = 800
-            SH = 600
-            os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
-            os.environ['SDL_VIDEO_CENTERED'] = '0'
-            screen1 = pygame.display.set_mode((SW, SH))
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if start_button.rect.collidepoint(event.pos):
+                print("Start Game")
+                running = True
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load('resources/backgroundmusic.mp3')
+                pygame.mixer.music.play(-1)
+                start = False
+                SW = 800
+                SH = 600
+                os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
+                os.environ['SDL_VIDEO_CENTERED'] = '0'
+                screen1 = pygame.display.set_mode((SW, SH))
+            if enter_button.rect.collidepoint(event.pos):
+                print("enter")
+
+
+        # if event.type == pygame.MOUSEBUTTONDOWN and running:
+        #     start = False
+        #     SW = 800
+        #     SH = 600
+        #     os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
+        #     os.environ['SDL_VIDEO_CENTERED'] = '0'
+        #     screen1 = pygame.display.set_mode((SW, SH))
 
         if event.type == pygame.MOUSEBUTTONDOWN and close:
             start = False
 
         screen.blit(logo, logo_rect)
-        start_but.draw()
-        quit_but.draw()
-        rule_but.draw()
-        translate_but.draw()
-        shop_but.draw()
+        # start_but.draw()
+        # quit_but.draw()
+        # rule_but.draw()
+        # translate_but.draw()
+        # shop_but.draw()
+
+        buttons.draw(screen)
 
         pygame.display.update()
 
@@ -189,6 +253,7 @@ while running:
 
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP and on_ground:
+            sound1.play()
             on_ground = False
             direction = True
             dino_rect.bottom -= 1
@@ -199,6 +264,14 @@ while running:
         if bg_list[i].right < 0:
             bg_list[i].left = SW
         screen1.blit(desert, bg_list[i])
+
+    if heart == 1:
+        screen1.blit(heart1_picture, heart1_picture_rect)
+    if heart == 2:
+        screen1.blit(heart2_picture, heart2_picture_rect)
+    if heart == 3:
+        screen1.blit(heart3_picture, heart3_picture_rect)
+
 
     # cactus
     if not cac_onscreen:
@@ -250,6 +323,16 @@ while running:
         else:
             direction = False
             dino_rect.bottom += jump_speed
+
+    if dino_rect.collidelistall(cac_list) and invincible_timer == 0:
+        invincible_timer = 60
+        heart -= 1
+        sound2.play()
+        if heart == 0:
+            sound3.play()
+            running = False
+
+    # print(cac_onscreen_list_rect, cac_onscreen_list_pic)
 
     # misc
     score_text = pixel_font.render(f'{score}', True, BLACK)
