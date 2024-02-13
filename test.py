@@ -3,7 +3,6 @@ import random
 import os
 from button import ButtonSprite
 
-
 pygame.init()
 
 # constants
@@ -50,8 +49,6 @@ screen = pygame.display.set_mode((SW, SH))
 background = (0, 150, 150)
 screen.fill(background)
 timer = pygame.time.Clock()
-
-
 
 # sprites and rect
 bg_list = []
@@ -148,7 +145,7 @@ class Button:
         self.screen = screen
 
     def draw(self):
-        global  running, close, is_running
+        global running, close, is_running
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
@@ -168,6 +165,7 @@ class Button:
         text_surface = self.font.render(self.text, True, (130, 130, 130))
         text_rect = text_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
         self.screen.blit(text_surface, text_rect)
+
 
 # start_but = Button( 50, 380, 105, 50, 'Start')
 # quit_but = Button( 50, 460, 105, 50, 'Enter')
@@ -206,7 +204,6 @@ while start:
             if enter_button.rect.collidepoint(event.pos):
                 print("enter")
 
-
         # if event.type == pygame.MOUSEBUTTONDOWN and running:
         #     start = False
         #     SW = 800
@@ -231,6 +228,8 @@ while start:
 
 while running:
     timer.tick(fps)
+    while invincible_timer > 0:
+        invincible_timer -= 1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -271,7 +270,6 @@ while running:
         screen1.blit(heart2_picture, heart2_picture_rect)
     if heart == 3:
         screen1.blit(heart3_picture, heart3_picture_rect)
-
 
     # cactus
     if not cac_onscreen:
