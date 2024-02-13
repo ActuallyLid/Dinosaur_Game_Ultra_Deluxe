@@ -31,8 +31,7 @@ jump_speed = 20
 time_down = 0
 time_elapsed = 0
 heart = 3
-
-key = 0
+time1 = 0
 
 # main game settings
 screen = pygame.display.set_mode((SW, SH))
@@ -95,10 +94,13 @@ dino_rect.left = 100
 font = pygame.font.SysFont('arial', 30)
 pixel_font = pygame.font.SysFont('OCR A Extended', 30)
 
-
 # misc
-def move(n):
-    pass
+SCORE = pygame.USEREVENT + 1
+pygame.time.set_timer(SCORE, 100)
+WALK = pygame.USEREVENT + 2
+pygame.time.set_timer(WALK, 200)
+JUMP = pygame.USEREVENT + 3
+pygame.time.set_timer(JUMP, 15)
 
 
 class Button:
@@ -170,16 +172,26 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             time_elapsed = 0
+        if event.type == SCORE:
+            score += 1
+            if score >= 100 and score % 100 == 0:
+                bg_speed += 2
+        if event.type == WALK:
+            if frame < len(dino_walk_list) - 1:
+                frame += 1
+            else:
+                frame = 0
+        if event.type == JUMP:
+            if direction and not on_ground:
+                jump_speed -= 1
+            elif on_ground:
+                jump_speed = 22
 
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP and on_ground:
             on_ground = False
             direction = True
             dino_rect.bottom -= 1
-
-    if event.type == pygame.KEYUP:
-        if event.key == pygame.K_UP:
-            time_down = pygame.time.get_ticks()
 
     # bg
     for i in range(len(bg_list)):
@@ -219,53 +231,25 @@ while running:
             cac2_move = False
             cac3_move = False
 
-    # cac1_rect.x -= bg_speed
-    # if cac1_rect.right < 0:
-    #     cac1_rect.left = SW
-    # screen1.blit(cac1, cac1_rect)
-
-    # ten seconds at a time
-    ten_seconds += 1
-    if ten_seconds % 5 == 0:
-        if frame < len(dino_walk_list) - 1:
-            frame += 1
-        else:
-            frame = 0
-
-    if ten_seconds % 10 == 0:
-        score += 1
-
-        if score >= 100 and score % 100 == 0:
-            bg_speed += 1
-
-    if ten_seconds % 1 == 0:
-        if direction and dino_rect.bottom <= ground:
-            jump_speed -= 1
-        else:
-            jump_speed = 20
-
     # dino physics
     if on_ground:
         screen1.blit(dino_walk_list[frame], dino_rect)
-
-    if not on_ground:
+    else:
         screen1.blit(dino_jump, dino_rect)
 
     if dino_rect.colliderect(ground_rect):
         on_ground = True
-        direction = None
+        direction = False
 
     if (ground - dino_rect.bottom) < 0:
-        dino_rect.bottom = ground + 1
+        dino_rect.bottom = ground
 
     if not on_ground:
-        if direction and dino_rect.top > 100:
+        if direction:
             dino_rect.bottom -= jump_speed
         else:
             direction = False
             dino_rect.bottom += jump_speed
-
-    # print(cac_onscreen_list_rect, cac_onscreen_list_pic)
 
     # misc
     score_text = pixel_font.render(f'{score}', True, BLACK)
