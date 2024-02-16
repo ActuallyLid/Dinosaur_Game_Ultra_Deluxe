@@ -228,8 +228,9 @@ while start:
 
 while running:
     timer.tick(fps)
-    while invincible_timer > 0:
+    if invincible_timer > 0:
         invincible_timer -= 1
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -277,10 +278,10 @@ while running:
             if random.randint(1, 3) == 1:
                 cac_onscreen = True
                 cac1_move = True
-            if random.randint(1, 3) == 2:
+            elif random.randint(1, 3) == 2:
                 cac_onscreen = True
                 cac2_move = True
-            if random.randint(1, 3) == 3:
+            elif random.randint(1, 3) == 3:
                 cac_onscreen = True
                 cac3_move = True
 
@@ -323,6 +324,7 @@ while running:
             dino_rect.bottom += jump_speed
 
     if dino_rect.collidelistall(cac_list) and invincible_timer == 0:
+        print(invincible_timer)
         invincible_timer = 60
         heart -= 1
         sound2.play()
@@ -330,7 +332,7 @@ while running:
             sound3.play()
             running = False
 
-    # print(cac_onscreen_list_rect, cac_onscreen_list_pic)
+
 
     # misc
     score_text = pixel_font.render(f'{score}', True, BLACK)
