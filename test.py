@@ -39,7 +39,7 @@ direction = None  # True - вверх, False - вниз
 jump_speed = 20
 time_down = 0
 time_elapsed = 0
-heart = 3
+heart = 7
 invincible_timer = 0
 
 key = 0
@@ -61,26 +61,26 @@ for i in range(0, 1920, 960):
 
 ground_rect = (0, ground, SW, SH - ground)
 
-heart3_picture = pygame.image.load('hearts.png')
-heart3_picture = pygame.transform.scale(heart3_picture, (80, 40))
-heart3_picture_rect = heart3_picture.get_rect()
-heart3_picture_rect.bottom = 50
-heart3_picture_rect.top = 10
-heart3_picture_rect.right = 100
-
-heart2_picture = pygame.image.load('hearts2.png')
-heart2_picture = pygame.transform.scale(heart2_picture, (55, 40))
-heart2_picture_rect = heart3_picture.get_rect()
-heart2_picture_rect.bottom = 50
-heart2_picture_rect.top = 10
-heart2_picture_rect.right = 100
+# heart3_picture = pygame.image.load('hearts.png')
+# heart3_picture = pygame.transform.scale(heart3_picture, (80, 40))
+# heart3_picture_rect = heart3_picture.get_rect()
+# heart3_picture_rect.bottom = 50
+# heart3_picture_rect.top = 10
+# heart3_picture_rect.right = 100
+#
+# heart2_picture = pygame.image.load('hearts2.png')
+# heart2_picture = pygame.transform.scale(heart2_picture, (55, 40))
+# heart2_picture_rect = heart3_picture.get_rect()
+# heart2_picture_rect.bottom = 50
+# heart2_picture_rect.top = 10
+# heart2_picture_rect.right = 100
 
 heart1_picture = pygame.image.load('heart1.png')
 heart1_picture = pygame.transform.scale(heart1_picture, (30, 40))
-heart1_picture_rect = heart3_picture.get_rect()
+heart1_picture_rect = heart1_picture.get_rect()
 heart1_picture_rect.bottom = 50
 heart1_picture_rect.top = 10
-heart1_picture_rect.right = 100
+heart1_picture_rect.right = 35
 
 cac1 = pygame.image.load('dino sprites/cactus1-1.png')
 cac1 = pygame.transform.scale(cac1, (50, 80))
@@ -231,7 +231,6 @@ while running:
     if invincible_timer > 0:
         invincible_timer -= 1
 
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -257,6 +256,12 @@ while running:
             on_ground = False
             direction = True
             dino_rect.bottom -= 1
+        if event.key == pygame.K_DOWN:
+            bg_speed = bg_speed - 5
+
+    if event.type == pygame.KEYUP:
+        if event.key == pygame.K_DOWN:
+            bg_speed = 7
 
     # bg
     for i in range(len(bg_list)):
@@ -265,12 +270,13 @@ while running:
             bg_list[i].left = SW
         screen1.blit(desert, bg_list[i])
 
-    if heart == 1:
+    for i in range(1, heart + 1):
+        heart1_picture_rect.bottom = 50
+        heart1_picture_rect.top = 10
+        heart1_picture_rect.right = 35
+
+        heart1_picture_rect.right *= i
         screen1.blit(heart1_picture, heart1_picture_rect)
-    if heart == 2:
-        screen1.blit(heart2_picture, heart2_picture_rect)
-    if heart == 3:
-        screen1.blit(heart3_picture, heart3_picture_rect)
 
     # cactus
     if not cac_onscreen:
@@ -331,8 +337,6 @@ while running:
         if heart == 0:
             sound3.play()
             running = False
-
-
 
     # misc
     score_text = pixel_font.render(f'{score}', True, BLACK)
