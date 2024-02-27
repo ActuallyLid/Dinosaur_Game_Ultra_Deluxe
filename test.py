@@ -2,6 +2,8 @@ import pygame
 import random
 import os
 from button import ButtonSprite
+import pygame_gui
+from pygame_gui.elements.ui_text_entry_line import UITextEntryLine
 
 pygame.init()
 
@@ -19,6 +21,58 @@ close = False
 start = True
 coin_factor = False
 coin_thing = False
+is_running = True
+
+WHITE = (255, 255, 255)
+
+
+pixel_font = pygame.font.SysFont('OCR A Extended', 30)
+
+
+pygame.font.init()
+
+pygame.display.set_caption('Quick Start')
+window_surface = pygame.display.set_mode((400, 300))
+
+background_enter = pygame.Surface((400, 300))
+background_enter.fill(pygame.Color('#000000'))
+
+manager = pygame_gui.UIManager((400, 300))
+text_input = UITextEntryLine(relative_rect=pygame.Rect(125, 100, 150, 50), manager=manager)
+
+hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((150, 175), (100, 50)),
+                                            text='Войти',
+                                            manager=manager)
+
+clock = pygame.time.Clock()
+
+
+while is_running:
+    time_delta = clock.tick(60) / 1000.0
+    for event in pygame.event.get():
+
+        if event.type == pygame_gui.UI_TEXT_ENTRY_CHANGED:
+            c = event.text
+        if event.type == pygame.QUIT:
+            is_running = False
+
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if event.ui_element == hello_button:
+                print(c)
+                is_running = False
+
+        manager.process_events(event)
+
+    manager.update(time_delta)
+
+    window_surface.blit(background_enter, (0, 0))
+    manager.draw_ui(window_surface)
+    score_text = pixel_font.render('Enter name', True, WHITE)
+    window_surface.blit(score_text, (115, 60))
+
+    pygame.display.update()
+
+
 SW = 1280
 SH = 633
 LEFT = 1
@@ -30,7 +84,6 @@ ten_seconds = 0
 frame = 0
 # color constants
 BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
 # physics consts misc
 ground = 420
 bg_speed = 7
@@ -131,7 +184,6 @@ dino_rect.bottom = ground + 1
 dino_rect.left = 100
 
 font = pygame.font.SysFont('arial', 30)
-pixel_font = pygame.font.SysFont('OCR A Extended', 30)
 
 # misc
 SCORE = pygame.USEREVENT + 1
@@ -285,7 +337,6 @@ while running:
     if coin_rect.right < 20:
         coin_rect.left = SW
         coin_factor = False
-
 
     # dino physics
     if on_ground:
