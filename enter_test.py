@@ -1,24 +1,32 @@
 import pygame
 import pygame_gui
+import pygame.font
 from pygame.rect import Rect
 from pygame_gui.elements.ui_text_entry_line import UITextEntryLine
 
 pygame.init()
+pygame.font.init()
 
 pygame.display.set_caption('Quick Start')
-window_surface = pygame.display.set_mode((800, 600))
+window_surface = pygame.display.set_mode((400, 300))
 
 background = pygame.Surface((800, 600))
 background.fill(pygame.Color('#000000'))
 
 manager = pygame_gui.UIManager((800, 600))
-text_input = UITextEntryLine(relative_rect=Rect(0, 0, 100, 50), manager=manager)
+text_input = UITextEntryLine(relative_rect=Rect(125, 100, 150, 50), manager=manager)
 
-hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
-                                            text='Say Hello',
+hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((150, 175), (100, 50)),
+                                            text='Войти',
                                             manager=manager)
 
 clock = pygame.time.Clock()
+font = pygame.font.SysFont('Arial', size=20)
+surf = font.render(
+    'Click on the circle',
+    antialias=True,
+    color=(0, 255, 0))
+window_surface.blit(surf, (0, 0))
 is_running = True
 
 while is_running:

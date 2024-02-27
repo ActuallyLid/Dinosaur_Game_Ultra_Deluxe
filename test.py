@@ -17,11 +17,14 @@ running = False
 is_running = False
 close = False
 start = True
+coin_factor = False
+coin_thing = False
 SW = 1280
 SH = 633
 LEFT = 1
 RIGHT = 0
 fps = 60
+coins = 0
 score = 0
 ten_seconds = 0
 frame = 0
@@ -39,10 +42,12 @@ direction = None  # True - вверх, False - вниз
 jump_speed = 20
 time_down = 0
 time_elapsed = 0
-heart = 7
+heart = 5
 invincible_timer = 0
-
+freddie_timer = 0
 key = 0
+freddie_scores = [100, random.randint(100, 300), random.randint(300, 500), random.randint(500, 800)]
+print(freddie_scores)
 
 # main game settings
 screen = pygame.display.set_mode((SW, SH))
@@ -60,20 +65,6 @@ for i in range(0, 1920, 960):
     bg_list.append(desert_rect)
 
 ground_rect = (0, ground, SW, SH - ground)
-
-# heart3_picture = pygame.image.load('hearts.png')
-# heart3_picture = pygame.transform.scale(heart3_picture, (80, 40))
-# heart3_picture_rect = heart3_picture.get_rect()
-# heart3_picture_rect.bottom = 50
-# heart3_picture_rect.top = 10
-# heart3_picture_rect.right = 100
-#
-# heart2_picture = pygame.image.load('hearts2.png')
-# heart2_picture = pygame.transform.scale(heart2_picture, (55, 40))
-# heart2_picture_rect = heart3_picture.get_rect()
-# heart2_picture_rect.bottom = 50
-# heart2_picture_rect.top = 10
-# heart2_picture_rect.right = 100
 
 heart1_picture = pygame.image.load('heart1.png')
 heart1_picture = pygame.transform.scale(heart1_picture, (30, 40))
@@ -98,11 +89,29 @@ cac3_rect = cac3.get_rect()
 cac3_rect.left = SW
 cac3_rect.bottom = ground
 
+coinspic = pygame.image.load('resources/coin.png')
+coinspic = pygame.transform.scale(coinspic, (40, 40))
+coinspic_rect = coinspic.get_rect()
+coinspic_rect.left = 630
+coinspic_rect.top = 12
+
+coin = pygame.image.load('resources/coin.png')
+coin = pygame.transform.scale(coin, (50, 50))
+coin_rect = coin.get_rect()
+coin_rect.left = SW
+coin_rect.bottom = ground - 10
+
 cac_list = [cac1_rect, cac2_rect, cac3_rect]
 cac_onscreen = False
 cac1_move = False
 cac2_move = False
 cac3_move = False
+
+freddie = pygame.image.load('love_of_my_life.png')
+freddie = pygame.transform.scale(freddie, (50, 60))
+freddie_rect = freddie.get_rect()
+freddie_rect.left = SW
+freddie_rect.bottom = ground
 
 logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
@@ -131,48 +140,8 @@ WALK = pygame.USEREVENT + 2
 pygame.time.set_timer(WALK, 200)
 JUMP = pygame.USEREVENT + 3
 pygame.time.set_timer(JUMP, 15)
-
-
-class Button:
-    def __init__(self, x, y, width, height, text, action=None):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.text = text
-        self.action = action
-        self.font = pygame.font.SysFont('Cooper Black', 35)
-        self.screen = screen
-
-    def draw(self):
-        global running, close, is_running
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-
-        if click[0] == 1 and self.action:
-            self.action()
-        else:
-            pygame.draw.rect(self.screen, (243, 218, 26), (self.x, self.y, self.width, self.height))
-        if self.x < mouse[0] < self.x + self.width and self.y < mouse[1] < self.y + self.height:
-            if self.text == 'Start':
-                pygame.mixer.music.stop()
-                pygame.mixer.music.load('resources/backgroundmusic.mp3')
-                pygame.mixer.music.play(-1)
-                running = True
-            elif self.text == 'Enter':
-                is_running = True
-
-        text_surface = self.font.render(self.text, True, (130, 130, 130))
-        text_rect = text_surface.get_rect(center=(self.x + self.width / 2, self.y + self.height / 2))
-        self.screen.blit(text_surface, text_rect)
-
-
-# start_but = Button( 50, 380, 105, 50, 'Start')
-# quit_but = Button( 50, 460, 105, 50, 'Enter')
-# rule_but = Button( 200, 380, 105, 50, 'Rules')
-# translate_but = Button( 50, 530, 250, 50, 'Settings')
-# shop_but = Button( 200, 460, 105, 50, 'Shop')
-
+COINS = pygame.USEREVENT + 4
+pygame.time.set_timer(COINS, 50)
 
 buttons = pygame.sprite.Group()
 start_button = ButtonSprite(buttons, 50, 380, 105, 50, "Start")
@@ -204,23 +173,10 @@ while start:
             if enter_button.rect.collidepoint(event.pos):
                 print("enter")
 
-        # if event.type == pygame.MOUSEBUTTONDOWN and running:
-        #     start = False
-        #     SW = 800
-        #     SH = 600
-        #     os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
-        #     os.environ['SDL_VIDEO_CENTERED'] = '0'
-        #     screen1 = pygame.display.set_mode((SW, SH))
-
         if event.type == pygame.MOUSEBUTTONDOWN and close:
             start = False
 
         screen.blit(logo, logo_rect)
-        # start_but.draw()
-        # quit_but.draw()
-        # rule_but.draw()
-        # translate_but.draw()
-        # shop_but.draw()
 
         buttons.draw(screen)
 
@@ -230,6 +186,8 @@ while running:
     timer.tick(fps)
     if invincible_timer > 0:
         invincible_timer -= 1
+    if freddie_timer > 0:
+        freddie_timer -= 1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -239,6 +197,9 @@ while running:
             score += 1
             if score >= 100 and score % 100 == 0:
                 bg_speed += 2
+        if event.type == COINS:
+            coin_factor = True
+            coin_thing = True
         if event.type == WALK:
             if frame < len(dino_walk_list) - 1:
                 frame += 1
@@ -309,6 +270,23 @@ while running:
             cac2_move = False
             cac3_move = False
 
+    if score in freddie_scores:
+        freddie_timer = 60
+        screen1.blit(freddie, (freddie_rect.x, freddie_rect.y))
+        print(1)
+        if freddie_rect.x > 0:
+            freddie_rect.x -= bg_speed
+            screen1.blit(freddie, (freddie_rect.x, freddie_rect.y))
+
+    if coin_factor:
+        screen1.blit(coin, coin_rect)
+        coin_rect.x -= bg_speed
+
+    if coin_rect.right < 20:
+        coin_rect.left = SW
+        coin_factor = False
+
+
     # dino physics
     if on_ground:
         screen1.blit(dino_walk_list[frame], dino_rect)
@@ -328,7 +306,6 @@ while running:
         else:
             direction = False
             dino_rect.bottom += jump_speed
-
     if dino_rect.collidelistall(cac_list) and invincible_timer == 0:
         print(invincible_timer)
         invincible_timer = 60
@@ -338,7 +315,13 @@ while running:
             sound3.play()
             running = False
 
+    if dino_rect.colliderect(coin_rect) and coin_thing:
+        coin_thing = False
+        coins += 1
     # misc
+    screen1.blit(coinspic, coinspic_rect)
+    coin_text = pixel_font.render(f'{coins}', True, BLACK)
+    screen1.blit(coin_text, (670, 12))
     score_text = pixel_font.render(f'{score}', True, BLACK)
     screen1.blit(score_text, (720, 12))
 
