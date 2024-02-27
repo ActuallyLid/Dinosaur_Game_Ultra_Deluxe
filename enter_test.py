@@ -21,12 +21,12 @@ hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((150, 175)
                                             manager=manager)
 
 clock = pygame.time.Clock()
-font = pygame.font.SysFont(name=font, size=20)
+font = pygame.font.SysFont('Arial', size=20)
 surf = font.render(
     'Click on the circle',
     antialias=True,
-    color=(0, 0, 0))
-background.blit(surf, (70, 100))
+    color=(0, 255, 0))
+window_surface.blit(surf, (0, 0))
 is_running = True
 
 while is_running:
