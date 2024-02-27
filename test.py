@@ -97,10 +97,9 @@ time_down = 0
 time_elapsed = 0
 heart = 5
 invincible_timer = 0
+sp_timer = 0
 freddie_timer = 0
 key = 0
-freddie_scores = [100, random.randint(100, 300), random.randint(300, 500), random.randint(500, 800)]
-print(freddie_scores)
 
 # main game settings
 screen = pygame.display.set_mode((SW, SH))
@@ -161,10 +160,13 @@ cac2_move = False
 cac3_move = False
 
 freddie = pygame.image.load('love_of_my_life.png')
-freddie = pygame.transform.scale(freddie, (50, 60))
+freddie = pygame.transform.scale(freddie, (70, 90))
 freddie_rect = freddie.get_rect()
 freddie_rect.left = SW
 freddie_rect.bottom = ground
+freddie_onscreen = False
+freddie_move = False
+
 
 logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
@@ -304,6 +306,17 @@ while running:
                 cac_onscreen = True
                 cac3_move = True
 
+    if (cac1_rect.x < SW // 2 or cac2_rect.x < SW // 2 or cac3_rect.x < SW // 2) and (not freddie_onscreen) and freddie_timer == 0:
+        if random.randint(0, 200) == 1:
+            freddie_onscreen = True
+            freddie_move = True
+            sp_timer = 120
+            freddie_timer = random.randint(10000, 50000)
+
+    if freddie_move:
+        freddie_rect.x -= bg_speed
+        screen1.blit(freddie, freddie_rect)
+
     if cac1_move:
         cac1_rect.x -= bg_speed
         screen1.blit(cac1, cac1_rect)
@@ -314,6 +327,11 @@ while running:
         cac3_rect.x -= bg_speed
         screen1.blit(cac3, cac3_rect)
 
+    if freddie_rect.right < -20:
+        freddie_rect.left = SW
+        freddie_onscreen = False
+        freddie_move = False
+
     for i in cac_list:
         if i.right < -20:
             i.left = SW
@@ -321,14 +339,6 @@ while running:
             cac1_move = False
             cac2_move = False
             cac3_move = False
-
-    if score in freddie_scores:
-        freddie_timer = 60
-        screen1.blit(freddie, (freddie_rect.x, freddie_rect.y))
-        print(1)
-        if freddie_rect.x > 0:
-            freddie_rect.x -= bg_speed
-            screen1.blit(freddie, (freddie_rect.x, freddie_rect.y))
 
     if coin_factor:
         screen1.blit(coin, coin_rect)
@@ -347,6 +357,12 @@ while running:
     if dino_rect.colliderect(ground_rect):
         on_ground = True
         direction = False
+
+    if dino_rect.colliderect(freddie_rect):
+        heart += 1
+        freddie_onscreen = False
+        freddie_move = False
+        freddie_rect.left = SW
 
     if (ground - dino_rect.bottom) < 0:
         dino_rect.bottom = ground
