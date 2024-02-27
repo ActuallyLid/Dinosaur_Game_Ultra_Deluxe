@@ -17,11 +17,14 @@ running = False
 is_running = False
 close = False
 start = True
+coin_factor = False
+coin_thing = False
 SW = 1280
 SH = 633
 LEFT = 1
 RIGHT = 0
 fps = 60
+coins = 0
 score = 0
 ten_seconds = 0
 frame = 0
@@ -98,6 +101,18 @@ cac3_rect = cac3.get_rect()
 cac3_rect.left = SW
 cac3_rect.bottom = ground
 
+coinspic = pygame.image.load('resources/coin.png')
+coinspic = pygame.transform.scale(coinspic, (40, 40))
+coinspic_rect = coinspic.get_rect()
+coinspic_rect.left = 630
+coinspic_rect.top = 12
+
+coin = pygame.image.load('resources/coin.png')
+coin = pygame.transform.scale(coin, (50, 50))
+coin_rect = coin.get_rect()
+coin_rect.left = SW
+coin_rect.bottom = ground - 10
+
 cac_list = [cac1_rect, cac2_rect, cac3_rect]
 cac_onscreen = False
 cac1_move = False
@@ -131,6 +146,8 @@ WALK = pygame.USEREVENT + 2
 pygame.time.set_timer(WALK, 200)
 JUMP = pygame.USEREVENT + 3
 pygame.time.set_timer(JUMP, 15)
+COINS = pygame.USEREVENT + 4
+pygame.time.set_timer(COINS, 50)
 
 
 class Button:
@@ -239,6 +256,9 @@ while running:
             score += 1
             if score >= 100 and score % 100 == 0:
                 bg_speed += 2
+        if event.type == COINS:
+            coin_factor = True
+            coin_thing = True
         if event.type == WALK:
             if frame < len(dino_walk_list) - 1:
                 frame += 1
@@ -309,6 +329,15 @@ while running:
             cac2_move = False
             cac3_move = False
 
+    if coin_factor:
+        screen1.blit(coin, coin_rect)
+        coin_rect.x -= bg_speed
+
+    if coin_rect.right < 20:
+        coin_rect.left = SW
+        coin_factor = False
+
+
     # dino physics
     if on_ground:
         screen1.blit(dino_walk_list[frame], dino_rect)
@@ -328,7 +357,6 @@ while running:
         else:
             direction = False
             dino_rect.bottom += jump_speed
-
     if dino_rect.collidelistall(cac_list) and invincible_timer == 0:
         print(invincible_timer)
         invincible_timer = 60
@@ -338,7 +366,13 @@ while running:
             sound3.play()
             running = False
 
+    if dino_rect.colliderect(coin_rect) and coin_thing:
+        coin_thing = False
+        coins += 1
     # misc
+    screen1.blit(coinspic, coinspic_rect)
+    coin_text = pixel_font.render(f'{coins}', True, BLACK)
+    screen1.blit(coin_text, (670, 12))
     score_text = pixel_font.render(f'{score}', True, BLACK)
     screen1.blit(score_text, (720, 12))
 
