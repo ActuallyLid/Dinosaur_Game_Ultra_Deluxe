@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+import sqlite3
 from button import ButtonSprite
 import pygame_gui
 from pygame_gui.elements.ui_text_entry_line import UITextEntryLine
@@ -16,6 +17,7 @@ sound3 = pygame.mixer.Sound('resources/death.mp3')
 pygame.mixer.music.load('resources/menumusic.mp3')
 pygame.mixer.music.play(-1)
 running = False
+end = False
 is_running = False
 close = False
 start = True
@@ -59,6 +61,12 @@ while is_running:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == hello_button:
                 print(c)
+                con = sqlite3.connect('users.db')
+                cur = con.cursor()
+                cur.execute('''INSERT INTO users(name,record,coins,skin1) VALUES('%s',0,0,0);''' % (c))
+
+                con.commit()
+                con.close()
                 is_running = False
 
         manager.process_events(event)
@@ -363,8 +371,21 @@ while running:
         heart -= 1
         sound2.play()
         if heart == 0:
+            con = sqlite3.connect('users.db')
+            cur = con.cursor()
+            cur.execute('''INSERT INTO popytki(points, coins) VALUES('%s','%s');''' % (score, coins))
+            cur.execute('''UPDATE users
+                                    SET coins = (SELECT SUM(coins) FROM popytki)
+                                    WHERE name == '%s' ''' % c)
+
+            cur.execute('''UPDATE users 
+                                    SET record = (SELECT MAX(points) FROM popytki)
+                                    WHERE name == '%s' ''' % c)
+            con.commit()
+            con.close()
             sound3.play()
             running = False
+            end = True
 
     if dino_rect.colliderect(coin_rect) and coin_thing:
         coin_thing = False
