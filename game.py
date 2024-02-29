@@ -14,7 +14,7 @@ sound1 = pygame.mixer.Sound('resources/pryjok.mp3')
 sound2 = pygame.mixer.Sound('resources/damage.mp3')
 sound3 = pygame.mixer.Sound('resources/death.mp3')
 sound4 = pygame.mixer.Sound('resources/coin_pick_up.mp3')
-sound5 = pygame.mixer.Sound('resources/IW2BF.mp3')
+sound_of_my_life = pygame.mixer.Sound('resources/IW2BF.mp3')
 
 pygame.mixer.music.load('resources/menumusic.mp3')
 pygame.mixer.music.play(-1)
@@ -91,8 +91,7 @@ while is_running:
     pygame.display.update()
 
 
-SW = 1280
-SH = 633
+
 LEFT = 1
 RIGHT = 0
 fps = 60
@@ -121,7 +120,12 @@ freddie_timer = 0
 key = 0
 
 # main game settings
+SW = 1280
+SH = 633
+os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
+os.environ['SDL_VIDEO_CENTERED'] = '0'
 screen = pygame.display.set_mode((SW, SH))
+screen1 = pygame.display.set_mode((SW, SH))
 background = (0, 150, 150)
 screen.fill(background)
 timer = pygame.time.Clock()
@@ -181,6 +185,8 @@ freddie_rect.left = SW
 freddie_rect.bottom = ground
 freddie_onscreen = False
 freddie_moving = False
+freddie_score = [random.randint(15, 150), random.randint(250, 350), random.randint(450, 550),
+                 random.randint(650, 850)]
 
 logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
@@ -383,12 +389,13 @@ while running:
                 cac_onscreen = True
                 cac3_move = True
 
-    if (cac1_rect.x < SW // 2 or cac2_rect.x < SW // 2 or cac3_rect.x < SW // 2) and (not freddie_onscreen) and freddie_timer == 0:
-        if random.randint(0, 200) == 1:
+    if (cac1_rect.x < SW // 2 or cac2_rect.x < SW // 2 or cac3_rect.x < SW // 2) \
+            and (not freddie_onscreen) and freddie_timer == 0:
+        if random.randint(0, 1000) % 50 == 0:
             freddie_onscreen = True
             freddie_moving = True
-            sp_timer = 120
-            freddie_timer = random.randint(10000, 50000)
+            freddie_timer = random.randint(1000, 2000)
+            invincible_timer = 200
 
     if freddie_moving:
         freddie_rect.x -= bg_speed
@@ -437,7 +444,8 @@ while running:
 
     if dino_rect.colliderect(freddie_rect):
         heart += 1
-        sound5.play()
+        sound4.stop()
+        sound_of_my_life.play()
         freddie_onscreen = False
         freddie_moving = False
         freddie_rect.left = SW
