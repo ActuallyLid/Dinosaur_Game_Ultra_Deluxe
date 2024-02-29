@@ -14,6 +14,7 @@ sound1 = pygame.mixer.Sound('resources/pryjok.mp3')
 sound2 = pygame.mixer.Sound('resources/damage.mp3')
 sound3 = pygame.mixer.Sound('resources/death.mp3')
 sound4 = pygame.mixer.Sound('resources/coin_pick_up.mp3')
+sound5 = pygame.mixer.Sound('resources/IW2BF.mp3')
 
 pygame.mixer.music.load('resources/menumusic.mp3')
 pygame.mixer.music.play(-1)
@@ -436,6 +437,7 @@ while running:
 
     if dino_rect.colliderect(freddie_rect):
         heart += 1
+        sound5.play()
         freddie_onscreen = False
         freddie_moving = False
         freddie_rect.left = SW

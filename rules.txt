@@ -1,7 +1,8 @@
 dino - you
-space - jump
+up - jump
+down - slow
 cactus - bad
-freddie mercury - good
+Freddie Mercury - good
 coins - get
-good luck
+good luck :)
 press any key to play
