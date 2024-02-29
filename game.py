@@ -13,22 +13,24 @@ pygame.init()
 sound1 = pygame.mixer.Sound('resources/pryjok.mp3')
 sound2 = pygame.mixer.Sound('resources/damage.mp3')
 sound3 = pygame.mixer.Sound('resources/death.mp3')
+sound4 = pygame.mixer.Sound('resources/coin_pick_up.mp3')
 
 pygame.mixer.music.load('resources/menumusic.mp3')
 pygame.mixer.music.play(-1)
 running = False
-end = False
-is_running = False
 close = False
-start = True
+game_over = False
+start = False
 coin_factor = False
-coin_thing = False
 is_running = True
 
 WHITE = (255, 255, 255)
 
 
 pixel_font = pygame.font.SysFont('OCR A Extended', 30)
+large_pixel_font = pygame.font.SysFont('OCR A Extended', 40)
+medium_pixel_font = pygame.font.SysFont('OCR A Extended', 70)
+big_pixel_font = pygame.font.SysFont('OCR A Extended', 100)
 
 
 pygame.font.init()
@@ -50,6 +52,12 @@ clock = pygame.time.Clock()
 
 
 while is_running:
+
+    con = sqlite3.connect('users.db')
+    cur = con.cursor()
+    cur.execute('''DELETE FROM popytki''')
+    con.commit()
+    con.close()
     time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
 
@@ -67,6 +75,7 @@ while is_running:
 
                 con.commit()
                 con.close()
+                start = True
                 is_running = False
 
         manager.process_events(event)
@@ -90,6 +99,7 @@ coins = 0
 score = 0
 ten_seconds = 0
 frame = 0
+y0 = 50
 # color constants
 BLACK = (0, 0, 0)
 # physics consts misc
@@ -105,10 +115,9 @@ time_down = 0
 time_elapsed = 0
 heart = 5
 invincible_timer = 0
+sp_timer = 0
 freddie_timer = 0
 key = 0
-freddie_scores = [100, random.randint(100, 300), random.randint(300, 500), random.randint(500, 800)]
-print(freddie_scores)
 
 # main game settings
 screen = pygame.display.set_mode((SW, SH))
@@ -153,14 +162,10 @@ cac3_rect.bottom = ground
 coinspic = pygame.image.load('resources/coin.png')
 coinspic = pygame.transform.scale(coinspic, (40, 40))
 coinspic_rect = coinspic.get_rect()
-coinspic_rect.left = 630
+coinspic_rect.left = 610
 coinspic_rect.top = 12
-
 coin = pygame.image.load('resources/coin.png')
-coin = pygame.transform.scale(coin, (50, 50))
-coin_rect = coin.get_rect()
-coin_rect.left = SW
-coin_rect.bottom = ground - 10
+
 
 cac_list = [cac1_rect, cac2_rect, cac3_rect]
 cac_onscreen = False
@@ -169,10 +174,12 @@ cac2_move = False
 cac3_move = False
 
 freddie = pygame.image.load('love_of_my_life.png')
-freddie = pygame.transform.scale(freddie, (50, 60))
+freddie = pygame.transform.scale(freddie, (70, 90))
 freddie_rect = freddie.get_rect()
 freddie_rect.left = SW
 freddie_rect.bottom = ground
+freddie_onscreen = False
+freddie_moving = False
 
 logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
@@ -205,10 +212,47 @@ pygame.time.set_timer(COINS, 50)
 
 buttons = pygame.sprite.Group()
 start_button = ButtonSprite(buttons, 50, 380, 105, 50, "Start")
-enter_button = ButtonSprite(buttons, 50, 460, 105, 50, 'Enter')
 rule_button = ButtonSprite(buttons, 200, 380, 105, 50, 'Rules')
 translate_button = ButtonSprite(buttons, 50, 530, 250, 50, 'Settings')
-shop_button = ButtonSprite(buttons, 200, 460, 105, 50, 'Shop')
+
+
+class Coins(pygame.sprite.Sprite):
+    def __init__(self, coin):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(coin, (50, 50))
+        self.rect = self.image.get_rect()
+        self.rect.left = SW
+        self.rect.bottom = ground - 10
+
+    def update(self):
+        self.kill()
+
+
+coin_object = Coins(coin)
+
+
+def show_end_screen():
+
+    screen1.fill(BLACK)
+    you_lose = big_pixel_font.render('GAME OVER!', True, WHITE)
+    screen1.blit(you_lose, (100, 30))
+    your_coins = medium_pixel_font.render(f'Coins: {coins}', True, WHITE)
+    screen1.blit(your_coins, (200, 300))
+    your_points = medium_pixel_font.render(f'Score: {score}', True, WHITE)
+    screen1.blit(your_points, (200, 350))
+    retry = large_pixel_font.render(f'Press any key to retry', True, WHITE)
+    screen1.blit(retry, (140, 430))
+
+    waiting = True
+    pygame.display.flip()
+    while waiting:
+        timer.tick(fps)
+        for event1 in pygame.event.get():
+            if event1.type == pygame.QUIT:
+                pygame.quit()
+            if event1.type == pygame.KEYUP:
+                waiting = False
+
 
 while start:
     screen.fill(WHITE)
@@ -230,9 +274,35 @@ while start:
                 os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
                 os.environ['SDL_VIDEO_CENTERED'] = '0'
                 screen1 = pygame.display.set_mode((SW, SH))
-            if enter_button.rect.collidepoint(event.pos):
-                print("enter")
 
+            if rule_button.rect.collidepoint(event.pos):
+
+                screen.fill(BLACK)
+                for i in open('rules.txt').readlines():
+                    rule = medium_pixel_font.render(f'{i}', True, WHITE)
+                    screen.blit(rule, (20, y0))
+                    y0 += 50
+
+                waiting = True
+                pygame.display.flip()
+                while waiting:
+                    timer.tick(fps)
+                    for event1 in pygame.event.get():
+                        if event1.type == pygame.QUIT:
+                            pygame.quit()
+                        if event1.type == pygame.KEYUP:
+                            waiting = False
+                            print("Start Game")
+                            running = True
+                            pygame.mixer.music.stop()
+                            pygame.mixer.music.load('resources/backgroundmusic.mp3')
+                            pygame.mixer.music.play(-1)
+                            start = False
+                            SW = 800
+                            SH = 600
+                            os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (200, 200)
+                            os.environ['SDL_VIDEO_CENTERED'] = '0'
+                            screen1 = pygame.display.set_mode((SW, SH))
         if event.type == pygame.MOUSEBUTTONDOWN and close:
             start = False
 
@@ -312,6 +382,17 @@ while running:
                 cac_onscreen = True
                 cac3_move = True
 
+    if (cac1_rect.x < SW // 2 or cac2_rect.x < SW // 2 or cac3_rect.x < SW // 2) and (not freddie_onscreen) and freddie_timer == 0:
+        if random.randint(0, 200) == 1:
+            freddie_onscreen = True
+            freddie_moving = True
+            sp_timer = 120
+            freddie_timer = random.randint(10000, 50000)
+
+    if freddie_moving:
+        freddie_rect.x -= bg_speed
+        screen1.blit(freddie, freddie_rect)
+
     if cac1_move:
         cac1_rect.x -= bg_speed
         screen1.blit(cac1, cac1_rect)
@@ -322,6 +403,11 @@ while running:
         cac3_rect.x -= bg_speed
         screen1.blit(cac3, cac3_rect)
 
+    if freddie_rect.right < -20:
+        freddie_rect.left = SW
+        freddie_onscreen = False
+        freddie_moving = False
+
     for i in cac_list:
         if i.right < -20:
             i.left = SW
@@ -330,20 +416,12 @@ while running:
             cac2_move = False
             cac3_move = False
 
-    if score in freddie_scores:
-        freddie_timer = 60
-        screen1.blit(freddie, (freddie_rect.x, freddie_rect.y))
-        print(1)
-        if freddie_rect.x > 0:
-            freddie_rect.x -= bg_speed
-            screen1.blit(freddie, (freddie_rect.x, freddie_rect.y))
-
     if coin_factor:
-        screen1.blit(coin, coin_rect)
-        coin_rect.x -= bg_speed
+        screen1.blit(coin_object.image, coin_object.rect)
+        coin_object.rect.x -= bg_speed
 
-    if coin_rect.right < 20:
-        coin_rect.left = SW
+    if coin_object.rect.right < 20:
+        coin_object.rect.left = SW
         coin_factor = False
 
     # dino physics
@@ -355,6 +433,12 @@ while running:
     if dino_rect.colliderect(ground_rect):
         on_ground = True
         direction = False
+
+    if dino_rect.colliderect(freddie_rect):
+        heart += 1
+        freddie_onscreen = False
+        freddie_moving = False
+        freddie_rect.left = SW
 
     if (ground - dino_rect.bottom) < 0:
         dino_rect.bottom = ground
@@ -371,29 +455,40 @@ while running:
         heart -= 1
         sound2.play()
         if heart == 0:
-            con = sqlite3.connect('users.db')
-            cur = con.cursor()
-            cur.execute('''INSERT INTO popytki(points, coins) VALUES('%s','%s');''' % (score, coins))
-            cur.execute('''UPDATE users
-                                    SET coins = (SELECT SUM(coins) FROM popytki)
-                                    WHERE name == '%s' ''' % c)
+            game_over = True
+    if game_over:
+        con = sqlite3.connect('users.db')
+        cur = con.cursor()
+        cur.execute('''INSERT INTO popytki(points, coins) VALUES('%s','%s');''' % (score, coins))
+        cur.execute('''UPDATE users
+                                            SET coins = (SELECT SUM(coins) FROM popytki)
+                                            WHERE name == '%s' ''' % c)
 
-            cur.execute('''UPDATE users 
-                                    SET record = (SELECT MAX(points) FROM popytki)
-                                    WHERE name == '%s' ''' % c)
-            con.commit()
-            con.close()
-            sound3.play()
-            running = False
-            end = True
+        cur.execute('''UPDATE users 
+                                            SET record = (SELECT MAX(points) FROM popytki)
+                                            WHERE name == '%s' ''' % c)
+        con.commit()
+        con.close()
+        sound3.play()
+        pygame.mixer.music.stop()
+        show_end_screen()
+        pygame.mixer.music.load('resources/backgroundmusic.mp3')
+        pygame.mixer.music.play(-1)
+        score = 0
+        coins = 0
+        heart = 5
+        bg_speed = 7
 
-    if dino_rect.colliderect(coin_rect) and coin_thing:
-        coin_thing = False
+        game_over = False
+
+    if dino_rect.colliderect(coin_object.rect):
+        sound4.play()
+        coin_object.update()
         coins += 1
     # misc
     screen1.blit(coinspic, coinspic_rect)
     coin_text = pixel_font.render(f'{coins}', True, BLACK)
-    screen1.blit(coin_text, (670, 12))
+    screen1.blit(coin_text, (650, 12))
     score_text = pixel_font.render(f'{score}', True, BLACK)
     screen1.blit(score_text, (720, 12))
 

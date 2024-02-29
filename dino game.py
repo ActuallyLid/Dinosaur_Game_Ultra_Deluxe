@@ -86,7 +86,7 @@ button_rect.center = (30, 30)
 sound1 = pygame.mixer.Sound('saber-crushing-blow.mp3')
 sound1.set_volume(0.1)
 
-coin_sfx = pygame.mixer.Sound('coin_pick_up.mp3')
+coin_sfx = pygame.mixer.Sound('resources/coin_pick_up.mp3')
 coin_sfx.set_volume(0.2)
 
 dino_walk_list = [[], []]  # 1 направление, 2 номер кадра
