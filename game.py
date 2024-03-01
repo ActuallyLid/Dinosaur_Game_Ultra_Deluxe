@@ -69,7 +69,6 @@ while is_running:
 
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == hello_button:
-                print(c)
                 con = sqlite3.connect('users.db')
                 cur = con.cursor()
                 cur.execute('''INSERT INTO users(name,record,coins,skin1) VALUES('%s',0,0,0);''' % (c))
@@ -270,7 +269,6 @@ while start:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if start_button.rect.collidepoint(event.pos):
-                print("Start Game")
                 running = True
                 pygame.mixer.music.stop()
                 pygame.mixer.music.load('sfx/backgroundmusic.mp3')
@@ -300,7 +298,6 @@ while start:
                             pygame.quit()
                         if event1.type == pygame.KEYUP:
                             waiting = False
-                            print("Start Game")
                             running = True
                             pygame.mixer.music.stop()
                             pygame.mixer.music.load('sfx/backgroundmusic.mp3')
@@ -462,7 +459,6 @@ while running:
             direction = False
             dino_rect.bottom += jump_speed
     if dino_rect.collidelistall(cac_list) and invincible_timer == 0:
-        print(invincible_timer)
         invincible_timer = 60
         heart -= 1
         sound2.play()
