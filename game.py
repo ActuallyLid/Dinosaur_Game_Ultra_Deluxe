@@ -10,13 +10,13 @@ pygame.init()
 
 # constants
 
-sound1 = pygame.mixer.Sound('resources/pryjok.mp3')
-sound2 = pygame.mixer.Sound('resources/damage.mp3')
-sound3 = pygame.mixer.Sound('resources/death.mp3')
-sound4 = pygame.mixer.Sound('resources/coin_pick_up.mp3')
-sound_of_my_life = pygame.mixer.Sound('resources/IW2BF.mp3')
+sound1 = pygame.mixer.Sound('sfx/pryjok.mp3')
+sound2 = pygame.mixer.Sound('sfx/damage.mp3')
+sound3 = pygame.mixer.Sound('sfx/death.mp3')
+sound4 = pygame.mixer.Sound('sfx/coin_pick_up.mp3')
+sound_of_my_life = pygame.mixer.Sound('sfx/IW2BF.mp3')
 
-pygame.mixer.music.load('resources/menumusic.mp3')
+pygame.mixer.music.load('sfx/menumusic.mp3')
 pygame.mixer.music.play(-1)
 running = False
 close = False
@@ -30,7 +30,7 @@ WHITE = (255, 255, 255)
 
 pixel_font = pygame.font.SysFont('OCR A Extended', 30)
 large_pixel_font = pygame.font.SysFont('OCR A Extended', 40)
-medium_pixel_font = pygame.font.SysFont('OCR A Extended', 70)
+medium_pixel_font = pygame.font.SysFont('OCR A Extended', 50)
 big_pixel_font = pygame.font.SysFont('OCR A Extended', 100)
 
 
@@ -141,7 +141,7 @@ for i in range(0, 1920, 960):
 
 ground_rect = (0, ground, SW, SH - ground)
 
-heart1_picture = pygame.image.load('heart1.png')
+heart1_picture = pygame.image.load('resources/heart1.png')
 heart1_picture = pygame.transform.scale(heart1_picture, (30, 40))
 heart1_picture_rect = heart1_picture.get_rect()
 heart1_picture_rect.bottom = 50
@@ -178,7 +178,7 @@ cac1_move = False
 cac2_move = False
 cac3_move = False
 
-freddie = pygame.image.load('love_of_my_life.png')
+freddie = pygame.image.load('resources/love_of_my_life.png')
 freddie = pygame.transform.scale(freddie, (70, 90))
 freddie_rect = freddie.get_rect()
 freddie_rect.left = SW
@@ -188,7 +188,7 @@ freddie_moving = False
 freddie_score = [random.randint(15, 150), random.randint(250, 350), random.randint(450, 550),
                  random.randint(650, 850)]
 
-logo = pygame.image.load('dinosaur game ultra deluxe logo.png')
+logo = pygame.image.load('resources/dinosaur game ultra deluxe logo.png')
 logo = pygame.transform.scale(logo, (1280, 633))
 logo_rect = logo.get_rect()
 logo_rect.center = (SW / 2, SH / 2)
@@ -273,7 +273,8 @@ while start:
                 print("Start Game")
                 running = True
                 pygame.mixer.music.stop()
-                pygame.mixer.music.load('resources/backgroundmusic.mp3')
+                pygame.mixer.music.load('sfx/backgroundmusic.mp3')
+                pygame.mixer.music.set_volume(0.4)
                 pygame.mixer.music.play(-1)
                 start = False
                 SW = 800
@@ -302,7 +303,8 @@ while start:
                             print("Start Game")
                             running = True
                             pygame.mixer.music.stop()
-                            pygame.mixer.music.load('resources/backgroundmusic.mp3')
+                            pygame.mixer.music.load('sfx/backgroundmusic.mp3')
+                            pygame.mixer.music.set_volume(0.4)
                             pygame.mixer.music.play(-1)
                             start = False
                             SW = 800
@@ -482,7 +484,8 @@ while running:
         sound3.play()
         pygame.mixer.music.stop()
         show_end_screen()
-        pygame.mixer.music.load('resources/backgroundmusic.mp3')
+        pygame.mixer.music.load('sfx/backgroundmusic.mp3')
+        pygame.mixer.music.set_volume(0.4)
         pygame.mixer.music.play(-1)
         score = 0
         coins = 0
